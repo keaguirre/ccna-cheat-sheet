@@ -1,5 +1,5 @@
 # CCNA Cheatsheet
-**Usa este material bajo tu propio riesgo, estos apuntes pueden contener tener errores y solo son de referencia y/o apoyo para estudio y/o ejecucion de ejercicios**
+**Usa este material bajo tu propio riesgo, estos apuntes pueden contener tener errores y solo son de referencia y/o apoyo para estudio**
 
 ## Mascaras de red mas ocupadas
 - /30: 255.255.255.252
@@ -178,8 +178,17 @@ VTP se utiliza para propagar la información de VLAN a través de la red, lo que
 - Configura la contraseña VTP (opcional):
     - <code>vtp password [password]</code>
 
-# EIGRP
+# EIGRP [referencia](https://ccnadesdecero.es/configuracion-eigrp-con-ipv4-ejemplo/)
+EIGRP es un protocolo de enrutamiento híbrido porque combina elementos de protocolos de enrutamiento de vector de distancia (como RIP) y protocolos de enrutamiento de estado de enlace (como OSPF). Esto significa que EIGRP puede adaptarse a diferentes topologías de red y proporcionar un enrutamiento rápido y eficiente.
+Es un protocolo propietario de cisco por lo que solo se puede implementar en hardware cisco a diferencia de OSPF.
 
+- Configuracion
+
+    - <code>router eigrp [autonomous_process_num]</code>
+    - <code>network [network]</code>
+    - <code>no auto-summary</code>
+# Falta por completar EIGRP
+    
 # BGP
 BGP (Border Gateway Protocol) es un protocolo de enrutamiento exterior utilizado en internet y en redes empresariales para intercambiar información de enrutamiento entre sistemas autónomos (AS, Autonomous Systems). A diferencia de los protocolos de enrutamiento interior, como OSPF o EIGRP, que se utilizan para enrutamiento dentro de un mismo sistema autónomo, BGP se centra en el enrutamiento entre sistemas autónomos diferentes.
 
@@ -204,7 +213,7 @@ BGP (Border Gateway Protocol) es un protocolo de enrutamiento exterior utilizado
         - Aquí, dirección_IP es la dirección IP del router vecino y número_de_AS es el número del sistema autónomo vecino.
 
 
-# ROUTER AND STICK:
+# Router On Stick:
 En la puerta del SW que da al ROUTER: previo haber configurado las vlans y haberlas agregado en mode access a las puertas(swport access vlan [num]). Comprobar(sh vlan brief)
 - #switchport mode trunk
 - #switchport trunk allowed vlan [numeros de vlans ej: 10,14,15]
@@ -216,7 +225,7 @@ En la puerta del router que da al SW:
 - #ip add [ip y mascara de gateway]
 - #description "[vlan n°]"
 
-# EtherChannel
+# PortChannel
 Un "Port Channel", también conocido como "Link Aggregation" o "EtherChannel", es una tecnología de redes que permite combinar múltiples enlaces físicos individuales entre dos dispositivos de red (como switches y servidores) en un solo enlace lógico de alta velocidad. Esto se hace para aumentar la capacidad de ancho de banda, mejorar la redundancia y balancear la carga en una red.
 
 El Port Channel es especialmente útil en entornos donde se necesita más ancho de banda o tolerancia a fallos, pero donde instalar enlaces individuales de alta velocidad puede ser costoso o impráctico.
@@ -247,7 +256,9 @@ El Port Channel es especialmente útil en entornos donde se necesita más ancho 
 
 
 
-
+# To do
+- Terminar EIGRP
+- CDP
 
 <br><br><br><br><br><br>
 <h1 align="center"><strong> Created by <a href="https://github.com/keaguirre">keaguirre</strong></h1>
