@@ -49,7 +49,11 @@
 - <code> show ip ospf interface </code>
 - <code> show ip ospf interface [intf] </code>
 - <code> show ip ospf interface brief</code>
+- <code> show ipv6 ospf</code>
+- <code> show ipv6 ospf interface</code>
 - <code> show interfaces port-channel [port_channel_num]</code>
+- <code> show ipv6 ospf neighbor</code>
+- <code> show spanning-tree vlan [VLAN_ID] ipv6</code>
 
 - Vecinos: <code>do show ip ospf neighbor</code>
 - Inundación de LSAs: <code>show ip ospf </code>database: 
@@ -59,6 +63,11 @@
     En la salida del comando show ip route puedes ver marcadas las rutas que fueron agregadas por OSPF, estas se identifican por la 'O'.
     - <code>show ip route ospf </code><br>
     También puedes ver que la distancia administrativa es 110 [110/2]. El 2 [110/2] hace referencia a la métrica de OSPF para esta ruta.
+
+- IPV6 <hr>
+    -   show ipv6 interface
+    -   show ipv6  interface brief
+    -   ping ipv6 [ip]
 
 # Tabla de enrutamiento (show ip route)
 -   O es para OSFP
@@ -162,7 +171,23 @@
 
 - ## Configurar rutas por defecto [(Referencia)](https://ccnadesdecero.com/curso/rutas-estaticas/)
     - <code>ip route 0.0.0.0 0.0.0.0 [sig_salto/interfaz_salida]</code>
+- ## OSPF Hello and Dead interval
+    - Dentro de una interfaz
+        - <code>ip ospf hello-interval [num]</code>
+        - <code>ip ospf dead-interval [num]</code>
 
+# OSPFv3
+-  Habilitar OSPFv3:
+    - <code> ipv6 router ospf [PROCESO_OSPF_ID]</code>
+- Configurar interfaces para OSPFv3
+    - <code>interface [TIPO_INTERFAZ] [NOMBRE_INTERFAZ]</code>
+        - <code>ipv6 enable</code>
+        - <code>ipv6 address [DIRECCIÓN_IPV6] [MÁSCARA_PREFIX]</code>
+        - <code>ipv6 ospf [PROCESO_OSPF_ID] area [NÚMERO_AREA]</code>
+- Configurar router id (opcional):
+    - <code>router-id [DIRECCIÓN_IPV6]</code>
+    - ejemplo:
+        - <code>router-id 2001:DB8::1</code>
 
 # VTP (VLAN Trunking Protocol)
 VTP se utiliza para propagar la información de VLAN a través de la red, lo que significa que cuando se configura una VLAN en un switch, esa información se propaga automáticamente a otros switches configurados en el mismo dominio VTP. Esto simplifica la administración de VLANs, ya que no es necesario configurar manualmente cada switch con la misma información de VLAN.
@@ -177,18 +202,75 @@ VTP se utiliza para propagar la información de VLAN a través de la red, lo que
         - transparent: El switch actuará en modo transparente, lo que significa que no participará en la propagación de información de VLAN, pero aún puede tener VLANs configuradas localmente.
 - Configura la contraseña VTP (opcional):
     - <code>vtp password [password]</code>
+- Configura la version:
+    - <code>vtp version {1 | 2 | 3}</code>
 
-# EIGRP [referencia](https://ccnadesdecero.es/configuracion-eigrp-con-ipv4-ejemplo/)
-EIGRP es un protocolo de enrutamiento híbrido porque combina elementos de protocolos de enrutamiento de vector de distancia (como RIP) y protocolos de enrutamiento de estado de enlace (como OSPF). Esto significa que EIGRP puede adaptarse a diferentes topologías de red y proporcionar un enrutamiento rápido y eficiente.
-Es un protocolo propietario de cisco por lo que solo se puede implementar en hardware cisco a diferencia de OSPF.
+# EIGRP [referencia](https://ccnadesdecero.es/protocolo-eigrp-definicion-y-caracteristicas/)
+El protocolo de routing de gateway interior mejorado (EIGRP – Enhanced Interior Gateway Routing Protocol) es un protocolo de routing vector distancia avanzado desarrollado por Cisco.
 
 - Configuracion
 
-    - <code>router eigrp [autonomous_process_num]</code>
-    - <code>network [network]</code>
+    - <code>router eigrp [eigrp_autonomous_process_num]</code>
+    - <code>network [network + wildcard(netmask)]</code>
+    - <code>interface [interface] </code>
+        - <code>ip eigrp [eigrp_autonomous_process_num]</code>
     - <code>no auto-summary</code>
-# Falta por completar EIGRP
+
+# EIGRPv6
+- Configurar EIGRP para IPv6:
+    - <code>ipv6 router eigrp [AS_NUMBER]</code>
+- Configurar las interfaces para IPv6 y EIGRP:
+    - <code>interface [TIPO_INTERFAZ] [NOMBRE_INTERFAZ]</code>
+        - <code>ipv6 enable</code>
+        - <code>ipv6 address [DIRECCIÓN_IPV6]/[MÁSCARA_PREFIX]</code>
+        - <code>ipv6 eigrp [AS_NUMBER]</code>
+- Configurar el Router ID (opcional):
+    - <code>eigrp router-id [DIRECCIÓN_IPV6]</code>
+- Verificar la configuración de EIGRP para IPv6:
+    - <code>show ipv6 eigrp neighbors</code>
     
+# CDP
+
+- Habilitar CDP globalmente:
+    - <code>cdp run</code>
+<code></code>
+- Limitar la publicación de CDP en interfaces específicas(Opcional):
+    - <code>interface [TIPO_INTERFAZ] [NOMBRE_INTERFAZ]</code>
+        - <code>cdp enable</code>
+- Verificar la configuración de CDP:
+    - <code>show cdp</code>
+
+# Spanning Tree (STP)
+El STP, definido por el estándar IEEE 802.1d es un protocolo que funciona en el nivel de la capa 2 del modelo OSI y su principal objetivo es controlar los enlaces redundantes, asegurando el rendimiento de una red.
+Como ya se sabe, los switches no filtran los broadcasts y tal situación hace que todos los broadcasts recibidos a una interfaz de un switch sean enviados por otras interfaces, excepto por la interfaz que se ha recibido (flooding), creándose así una tormenta de difusión.
+### ¿Cómo funciona el STP?
+En términos generales, lo que el STP hace es eliminar lógicamente caminos de comunicación. Para ello el protocolo crea un árbol de switches presentes en la red y elige el switch de referencia, a partir del cual se creará el árbol.
+
+La elección del root bridge es hecha con base en una prioridad y también con base en la dirección MAC. En una red sólo puede haber un root bridge.Considerando el ejemplo, SwitchA es elegido como root bridge (puente raíz), ya que es quien tiene menor prioridad (por defecto, la prioridad es 32768) y también la más bajo dirección física (dirección MAC).
+![layers](https://ccnadesdecero.es/wp-content/uploads/2018/08/Elecci%C3%B3n-de-root-bridge-en-STP.jpg)
+A continuación, cada switch, que no es root bridge, define lo que es el root port. Esta interfaz es elegida teniendo en cuenta el menor costo (teniendo como base el ancho de banda) para el root bridge. Esta interfaz se coloca en modo de enrutamiento.
+Por cada segmento, se establece un designated bridge. Este será el switch con el menor costo hasta el root bridge (en el ejemplo a seguir es el SwitchD). La interfaz de conexión con el root bridge se encuentra en modo “reenvío”. El puerto del SwitchE se coloca en modo de bloqueo, por lo tanto, bloquea los frames y evitar los bucles (loops) en la red.
+
+- Habilitar STP en la vlan
+    - <code>interface vlan [vlan_num]</code>
+    - <code>spanning-tree vlan [vlan_num] enable</code>
+- Configurar el tipo de STP
+    - <code>spanning-tree mode {pvst | rapid-pvst | mst}</code>
+    - Modos: 
+        - PVST (Per-VLAN Spanning Tree): Originalmente, Cisco desarrolló el PVST como una extensión propietaria del STP. Con PVST, se crea un árbol de expansión separado para cada VLAN en el switch. Esto significa que cada VLAN tiene su propia instancia de STP, lo que permite un mejor control y aislamiento de bucles en cada VLAN. PVST es específico de Cisco.
+
+        - PVST+ (Per-VLAN Spanning Tree Plus): PVST+ es una mejora de PVST que es compatible con el estándar IEEE 802.1Q para VLAN. Con PVST+, se sigue utilizando un árbol de expansión separado para cada VLAN, pero es compatible con estándares VLAN como 802.1Q.
+
+        - Rapid PVST (Rapid Per-VLAN Spanning Tree): Esta variante es una versión más rápida de PVST+. En lugar de esperar los 50 segundos típicos para la convergencia de STP original, Rapid PVST puede converger en cuestión de segundos. Cada VLAN todavía tiene su propio árbol de expansión.
+
+        - MSTP (Multiple Spanning Tree Protocol): MSTP es una versión avanzada de STP que permite agrupar múltiples VLAN en el mismo árbol de expansión. En lugar de mantener un árbol separado por VLAN, como en PVST, MSTP agrupa las VLAN lógicamente y, por lo tanto, reduce la sobrecarga y la complejidad del árbol de expansión. Esto se logra mediante la configuración de múltiples instancias de MSTP, cada una de las cuales agrupa un conjunto de VLAN relacionadas.
+
+# STPv6
+- Configurar STP IPv6:
+    - spanning-tree vlan [VLAN_ID] ipv6
+
+- show spanning-tree vlan [VLAN_ID] ipv6
+
 # BGP
 BGP (Border Gateway Protocol) es un protocolo de enrutamiento exterior utilizado en internet y en redes empresariales para intercambiar información de enrutamiento entre sistemas autónomos (AS, Autonomous Systems). A diferencia de los protocolos de enrutamiento interior, como OSPF o EIGRP, que se utilizan para enrutamiento dentro de un mismo sistema autónomo, BGP se centra en el enrutamiento entre sistemas autónomos diferentes.
 
@@ -198,34 +280,32 @@ BGP (Border Gateway Protocol) es un protocolo de enrutamiento exterior utilizado
     - AS Path: BGP utiliza el atributo AS path para evitar bucles de enrutamiento y para garantizar que el tráfico no vuelva a entrar en el mismo AS.
     - Peering BGP: Los routers BGP se conectan a través de "peers" (pares) BGP. Los peers establecen conexiones TCP para intercambiar actualizaciones de enrutamiento. Los peers pueden ser proveedores de servicios, peers de pares de igual a igual (iBGP) o peers de sistemas autónomos diferentes.
     - BGP Route Reflectors y Confederaciones.
-    - Filtros y Control de Tráfico.
-
-### Config ------>
-- Configura BGP:
+    - Filtros y Control de Tráfico.<br><br>
+- Configura BGP: <hr>
     - <code>router bgp [número_de_AS]</code>
         - Donde número_de_AS es el número del sistema autónomo al que pertenece el router.
-- Configura el ID del router:
-    - <code>bgp router-id dirección_IP</code>
-- Agrega redes que deseas anunciar:
-    - <code>network dirección_red</code>
-- Configura los peers BGP:
-    - <code>neighbor dirección_IP remote-as número_de_AS</code>
-        - Aquí, dirección_IP es la dirección IP del router vecino y número_de_AS es el número del sistema autónomo vecino.
+    - Configura el ID del router:
+        - <code>bgp router-id dirección_IP</code>
+    - Agrega redes que deseas anunciar:
+        - <code>network dirección_red</code>
+    - Configura los peers BGP:
+        - <code>neighbor dirección_IP remote-as número_de_AS</code>
+            - Aquí, dirección_IP es la dirección IP del router vecino y número_de_AS es el número del sistema autónomo vecino.
 
 
 # Router On Stick:
 En la puerta del SW que da al ROUTER: previo haber configurado las vlans y haberlas agregado en mode access a las puertas(swport access vlan [num]). Comprobar(sh vlan brief)
-- #switchport mode trunk
-- #switchport trunk allowed vlan [numeros de vlans ej: 10,14,15]
-para agregar otra vlan
-- #switchport trunk allowed vlan add [vlan num]
-En la puerta del router que da al SW:
-- #int g0/1.10     -----> idealmente para llevar un orden, poner .[n° vlan]
-- #encapsulation dot1q [vlan n°]
-- #ip add [ip y mascara de gateway]
-- #description "[vlan n°]"
+- <code>switchport mode trunk</code>
+- <code>switchport trunk allowed vlan [numeros de vlans ej: 10,14,15]
+para agregar otra vlan</code>
+- <code>switchport trunk allowed vlan add [vlan num]</code>
+- En la puerta del router que da al SW:
+    - <code>int g0/1.10     -----> idealmente para llevar un orden, poner .[n° vlan]</code>
+    - <code>encapsulation dot1q [vlan n°]</code>
+    - <code>ip add [ip y mascara de gateway]</code>
+    - <code>description "[vlan n°]"</code>
 
-# PortChannel
+# PortChannel - EtherChannel
 Un "Port Channel", también conocido como "Link Aggregation" o "EtherChannel", es una tecnología de redes que permite combinar múltiples enlaces físicos individuales entre dos dispositivos de red (como switches y servidores) en un solo enlace lógico de alta velocidad. Esto se hace para aumentar la capacidad de ancho de banda, mejorar la redundancia y balancear la carga en una red.
 
 El Port Channel es especialmente útil en entornos donde se necesita más ancho de banda o tolerancia a fallos, pero donde instalar enlaces individuales de alta velocidad puede ser costoso o impráctico.
@@ -250,10 +330,14 @@ El Port Channel es especialmente útil en entornos donde se necesita más ancho 
     - <code>interface range gigabitethernet [int_inicio] - [int_fin] channel-group [port-channel_num] mode active</code>
 
 
+# IPV6
+### Enable IPV6
 
+- <code>ipv6 unicast-routing</code>
+- <code>ipv6 address </code>
 
-
-
+- ip1= 2001:10:10:10::<code>1</code>/64
+- ip2= 2001:10:10:10::<code>2</code>/64
 
 
 # To do
