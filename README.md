@@ -294,40 +294,68 @@ BGP (Border Gateway Protocol) es un protocolo de enrutamiento exterior utilizado
 
 
 # Router On Stick:
-En la puerta del SW que da al ROUTER: previo haber configurado las vlans y haberlas agregado en mode access a las puertas(swport access vlan [num]). Comprobar(sh vlan brief)
+router-on-a-stick es una configuración de red utilizada en entornos donde se necesita separar múltiples redes virtuales (VLANs) en un único enlace físico. Esta configuración es típicamente implementada en equipos de red de Cisco.
+un único enlace físico entre un switch y un router es configurado como un enlace troncal (trunk link) capaz de transportar múltiples VLANs. El router se configura para tener subinterfaces, una para cada VLAN que necesita ser enrutada. Cada subinterfaz se asigna a una VLAN específica y tiene su propia dirección IP.
+
+
+En la puerta del SW que da al ROUTER: previo haber configurado las vlans y haberlas agregado en mode trunk en la puerta que apunta al router (swport mode trunk -> swport trunk allowed vlan [num]). Comprobar(sh vlan brief)
 - <code>switchport mode trunk</code>
 - <code>switchport trunk allowed vlan [numeros de vlans ej: 10,14,15]
 para agregar otra vlan</code>
-- <code>switchport trunk allowed vlan add [vlan num]</code>
+- <code>switchport trunk allowed vlan add [vlan num]</code> para adicionar vlans a las ya existentes
 - En la puerta del router que da al SW:
-    - <code>int g0/1.10     -----> idealmente para llevar un orden, poner .[n° vlan]</code>
+    - <code>int g0/1.[vlan_num]</code>  idealmente para llevar un orden, subinterface_num = vlan_num 
     - <code>encapsulation dot1q [vlan n°]</code>
     - <code>ip add [ip y mascara de gateway]</code>
     - <code>description "[vlan n°]"</code>
 
-# PortChannel - EtherChannel
+# PortChannel - EtherChannel [Ref](https://jmcristobal.com/es/2021/02/19/etherchannel-pagp-y-lacp/)
 Un "Port Channel", también conocido como "Link Aggregation" o "EtherChannel", es una tecnología de redes que permite combinar múltiples enlaces físicos individuales entre dos dispositivos de red (como switches y servidores) en un solo enlace lógico de alta velocidad. Esto se hace para aumentar la capacidad de ancho de banda, mejorar la redundancia y balancear la carga en una red.
 
 El Port Channel es especialmente útil en entornos donde se necesita más ancho de banda o tolerancia a fallos, pero donde instalar enlaces individuales de alta velocidad puede ser costoso o impráctico.
 
-- Crea el port-Channel:
-    - <code>interface port-channel [port-channel_num]</code>
-- Configura el modo de operación LACP:
-    - <code>channel-group [port-channel_num] mode active</code>
-        - Establece el modo LACP como "active". Este modo permitirá que el switch envíe y reciba mensajes LACP para formar el Port Channel.
-        
+- ## Configurar PAgP:
+- Entra a la interfaz:
+    - <code>interface [tipo-interfaz][num-interfaz]</code>
+    - <code>channel-protocol pagp</code>
+- Configura el portchannel en la puerta:
+    - <code>channel-group [portchannel-num] mode { auto | desirable }</code>
+- Checkear el etherchannel:
+    - <code>show etherchannel summary</code>
+
+- ## Configurar LACP
+- Define la prioridad (default 32768):
+    - <code>lacp system-priority 4096</code>
+- Agregar Portchannel a las interfaces:
+    - <code>interface [tipo-interfaz][num-interfaz]</code>
+    - <code>channel-protocol lacp</code>
+    - Asigna el grupo de LACP:
+        - <code>channel-group [num-lacp] mode { active | passive | on }</code>
+        - <code>lacp port-priority [priority-num]</code>
+
+    - Cada interfaz que necesitemos incluír a un EtherChannel en específico se debe asignar al mismo id de grupo. La negociación del canal debe estar on (canal sin negociación LACP), passive (escuchar pasivamente y esperar a ser preguntado), o active (preguntar activamente).
+
+
+        ## Modos para PAgP y LACP
         ```
         Mode on: 
             Este modo se utiliza para forzar la agregación de enlaces sin la negociación de un protocolo de control (LACP o PAgP). Si configuras un Port Channel en modo "on", los enlaces se agregarán al Port Channel sin importar si el otro extremo está configurado en el mismo modo.
 
-        Mode Active (LACP) o Desirable (PAgP):
+        Mode Active (LACP) o Desirable para (PAgP):
             En el caso de LACP, el modo "active" indica que el dispositivo enviará mensajes LACP para iniciar la formación del Port Channel. En el caso de PAgP, el modo "desirable" también indica que el dispositivo iniciará la formación del Port Channel.
 
-        Mode Passive (LACP) o Auto (PAgP):
+        Mode Passive (LACP) o Auto para (PAgP):
             En el caso de LACP, el modo "passive" indica que el dispositivo espera a que el otro extremo inicie la formación del Port Channel. En el caso de PAgP, el modo "auto" también indica que el dispositivo esperará a que el otro extremo inicie la formación del Port Channel.
         ```
-- Agrega los enlaces físicos al Port Channel:
-    - <code>interface range gigabitethernet [int_inicio] - [int_fin] channel-group [port-channel_num] mode active</code>
+## Comandos verificación generales para los etherchannel:
+
+- <code>show etherchhannel summary</code>
+- <code>show etherchhannel port</code>
+- <code>show etherchhannel detail</code>
+- <code>show etherchhannel load-balance</code>
+- <code>show pagp | lacp neighbor</code>
+### Displays priority and MAC
+- <code>show lacp sys-id</code> 
 
 
 # IPV6
@@ -340,9 +368,6 @@ El Port Channel es especialmente útil en entornos donde se necesita más ancho 
 - ip2= 2001:10:10:10::<code>2</code>/64
 
 
-# To do
-- Terminar EIGRP
-- CDP
 
 <br><br><br><br><br><br>
 <h1 align="center"><strong> Created by <a href="https://github.com/keaguirre">keaguirre</strong></h1>
