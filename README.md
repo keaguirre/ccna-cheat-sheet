@@ -447,8 +447,6 @@ depende de lo que quiera hacer tengo dos estrategias:
     - <code>{permi|deny} any any</code>        
    
 # NAT
-- inside: Se refiere a las direcciones IP de la red interna que quieres traducir.
-- outside: Se refiere a las direcciones IP de la red externa (generalmente la dirección IP pública que tu ISP te proporciona).
 
 ### - Inside Local (IL):
     Definición: Es la dirección IP local (privada) de un dispositivo dentro de tu red local.
@@ -466,13 +464,38 @@ depende de lo que quiera hacer tengo dos estrategias:
     Definición: Es la dirección IP global (pública) de un dispositivo fuera de tu red local. Esta es la dirección que utiliza Internet para comunicarse con dispositivos en tu red.
     Ejemplo: Si estás accediendo a un servidor en Internet que tiene una dirección IP pública de 172.217.21.174, entonces 172.217.21.174 sería la dirección outside global.
 
+
+## NAT Dinámico
+El NAT dinámico permite la asignación automática de direcciones locales internas a direcciones globales internas. Por lo general, estas direcciones globales internas son direcciones IPv4 públicas. El NAT dinámico utiliza un grupo o un conjunto de direcciones IPv4 públicas para la traducción.
+
+    - Como configurar:
+        - Crea un grupo de direcciones IP públicas (pool):
+        Esto se hace para definir el conjunto de direcciones IP públicas que el router utilizará para asignar a los dispositivos internos cuando accedan a Internet.
+        - Define una lista de acceso (ACL) para especificar qué direcciones IP privadas serán traducidas:
+            Esto determinará qué tráfico será sometido a la traducción NAT.
+        - Asocia el grupo de direcciones IP públicas (pool) con la lista de acceso
+        - Configura la interfaz: ip nat [inside | outside]
+
+
+<hr>
+
+- inside: Se refiere a las direcciones IP de la red interna que quieres traducir.
+- outside: Se refiere a las direcciones IP de la red externa (generalmente la dirección IP pública que tu ISP te proporciona).
+
 ## Comandos
+    - NAT Estático
         ´´´
         ip nat inside source static [dirección_interna] [dirección_externa]
-        interface {tipo} {numero}
-        ip nat {inside | outside}
+        interface [tipo] [numero]
+        ip nat [inside | outside]
 
         ´´´
+    - NAT Dinámico
+        ip nat pool [nombre-pool] [ip-inicio] [ip-termino] netmask [máscara]
+        access-list [número] permit [dirección de origen] [máscara de subred]
+        ip nat inside source list [número de ACL] pool [nombre del pool]
+        interface [tipo] [número]
+        ip nat [inside | outside]
 
 
 <br><br><br><br><br><br>
