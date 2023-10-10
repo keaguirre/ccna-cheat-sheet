@@ -438,6 +438,44 @@ Ejemplo: access-list 1 permit 192.168.10.10 0.0.0.0 es reemplazada por access-li
     ip access-group {numero} {in|out}
 
     ´´´
+## Estrategias
+- Por defecto ACL luego de los statements, deniega todo el trafico con un deny any any implícito,
+depende de lo que quiera hacer tengo dos estrategias:
+    - Permitir solo lo que quiero y denegar el resto con deny any any
+    - Denegar solo lo que quiero y permitir el resto con permit any any
+
+        ´´´
+        {permi|deny} any any
+
+        ´´´
+# NAT
+- inside: Se refiere a las direcciones IP de la red interna que quieres traducir.
+- outside: Se refiere a las direcciones IP de la red externa (generalmente la dirección IP pública que tu ISP te proporciona).
+
+### - Inside Local (IL):
+    Definición: Es la dirección IP local (privada) de un dispositivo dentro de tu red local.
+    Ejemplo: Si tienes un dispositivo con la dirección IP 192.168.1.10 dentro de tu red, entonces 192.168.1.10 sería la dirección inside local.
+
+### - Inside Global (IG):
+    Definición: Es la dirección IP global (pública) que representa a un dispositivo dentro de tu red local cuando se comunica con recursos en Internet.
+    Ejemplo: Si tu router utiliza una única dirección IP pública 203.0.113.1 para representar a todos los dispositivos de tu red, entonces 203.0.113.1 sería la dirección inside global.
+
+### - Outside Local (OL):
+    Definición: Es la dirección IP local (privada) de un dispositivo fuera de tu red local, es decir, de un servidor o dispositivo en Internet.
+    Ejemplo: Si estás accediendo a un servidor en Internet que tiene la dirección IP 216.58.211.110, entonces 216.58.211.110 sería la dirección outside local.
+
+### - Outside Global (OG):
+    Definición: Es la dirección IP global (pública) de un dispositivo fuera de tu red local. Esta es la dirección que utiliza Internet para comunicarse con dispositivos en tu red.
+    Ejemplo: Si estás accediendo a un servidor en Internet que tiene una dirección IP pública de 172.217.21.174, entonces 172.217.21.174 sería la dirección outside global.
+
+## Comandos
+        ´´´
+        ip nat inside source static [dirección_interna] [dirección_externa]
+        interface {tipo} {numero}
+        ip nat {inside | outside}
+
+        ´´´
+
 
 <br><br><br><br><br><br>
 <h1 align="center"><strong> Created by <a href="https://github.com/keaguirre">keaguirre</strong></h1>
