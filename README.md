@@ -54,6 +54,7 @@
 - <code> show interfaces port-channel [port_channel_num]</code>
 - <code> show ipv6 ospf neighbor</code>
 - <code> show spanning-tree vlan [VLAN_ID] ipv6</code>
+- <code> show access-list</code>
 
 - Vecinos: <code>do show ip ospf neighbor</code>
 - Inundación de LSAs: <code>show ip ospf </code>database: 
@@ -367,7 +368,76 @@ El Port Channel es especialmente útil en entornos donde se necesita más ancho 
 - ip1= 2001:10:10:10::<code>1</code>/64
 - ip2= 2001:10:10:10::<code>2</code>/64
 
+# ACL
+## ACL Entrada
+ACL de Entrada: Los paquetes entrantes se procesan antes de enrutarse a la interfaz de salida. Las ACL de entradas son eficientes, por que ahorran la sobrecarga de enrutar búsquedas si el paquete se descarta.
+ACL de Salida: Los paquetes entrantes se enrutan a la interfaz de salida y después de procesan mediante la ACL de salida. Las ACL de salida son ideales cuando se aplica el mismo filtro a los paquetes que provienen de varias interfaces de entradas antes de salidas por la misma interfaz de salida.
+## ACL Salida
 
+Las ACL de entrada filtran los paquetes que ingresan a una interfaz específica y lo hacen antes de que se enruten a la interfaz de salida.
+Las ACL de salida filtran los paquetes después de que se enrutan, independientemente de la interfaz de entrada.
+
+las listas de acceso por defecto deniegan, permito y luego deniego <code>deny any</code>
+
+## ACL Estándar
+Se pueden utilizan para permitir o denegar el tráfico de direcciones IPv4 de origen únicamente. El destino del paquetes o puertos involucrados no se evalúan.<br>
+<code>access-list [10] permit [network] [wildcard]</code>
+
+## ACL Extendida
+Este tipo de ACL filtran paquetes IPv4 según varios atributo tales como tipo de protocolo, dirección de origen, dirección de destino, puerto TCP o UDP de origen y puerto TCP o UDP de destino.<br>
+<code>access-list [103] permit [protocol] [network] [wildcard] any eq [port_number]</code>
+
+Las ACL estándar y extendidas se pueden crear con un número o un nombre para identificar la ACL y su lista de instrucciones.
+
+## ACL Numerada
+El uso de ACL numeradas es un método eficaz para determinar el tipo de ACL en redes pequeñas con tráfico definido de formas más homogénea. Sin embargo, un número no proporciona información sobre el propósito de la ACL. Por eso que también se pueden utilizar nombre para poder identificar una ACL de Cisco.Dentro de las ACL, existen dos palabras claves utilizadas, que es necesario saber su interpretación y uso, las cuales son any y host
+
+## Palabras clave
+- Any: Sirve para poder sustituir una dirección IPv4 0.0.0.0 con una wildcard 255.255.255.255.
+- Host: Se utiliza para sustituir la wildcard de una sola dirección IP en una ACL.
+
+Ejemplo: access-list 1 permit 0.0.0.0 255.255.255.255 es reemplazado por access-list 1 permit any
+Ejemplo: access-list 1 permit 192.168.10.10 0.0.0.0 es reemplazada por access-list 1 permit host 192.168.10.10
+<hr>
+
+### - ACL standard solo tiene origen, se recomienda lo mas lejos del origen
+### - ACL extendida puedo bloquear destino, se recomienda más cerca del origen
+
+# Comandos
+## ACL Estándar
+    ´´´
+    access-list {numero} {permit|deny} {network} {wildcard}
+    interface {tipo} {numero}
+    ip access-group {numero} {in|out}
+
+    ´´´
+## ACL Estándar nombrada
+    ´´´
+    ip access-list standard {nombre}
+    permit {network} {wildcard}
+    deny {direccion} {wildcard}
+    exit
+    interface {tipo} {numero}
+    ip access-group {nombre} {in|out}
+
+## ACL Extendida
+    ´´´
+    ip access-list extended {nombre}
+    permit {protocolo} {network-origen} {wildcard-origen} {destino} {wildcard-destino}
+    deny {protocolo} {network-origen} {wildcard-origen} {destino} {wildcard-destino}
+    exit
+    interface {tipo} {numero}
+    ip access-group {nombre} {in|out}
+    
+
+    ´´´
+## ACL Extendida numerada no nombrada
+    ´´´
+    access-list {numero} {permit|deny} {protocolo} {red-origen} {wildcard-origen} {red-destino} {wildcard-destino} eq {puerto}
+    interface {tipo} {numero}
+    ip access-group {numero} {in|out}
+
+    ´´´
 
 <br><br><br><br><br><br>
 <h1 align="center"><strong> Created by <a href="https://github.com/keaguirre">keaguirre</strong></h1>
