@@ -444,10 +444,8 @@ depende de lo que quiera hacer tengo dos estrategias:
     - Permitir solo lo que quiero y denegar el resto con deny any any
     - Denegar solo lo que quiero y permitir el resto con permit any any
 
-        ´´´
-        {permi|deny} any any
-
-        ´´´
+    - <code>{permi|deny} any any</code>        
+   
 # NAT
 - inside: Se refiere a las direcciones IP de la red interna que quieres traducir.
 - outside: Se refiere a las direcciones IP de la red externa (generalmente la dirección IP pública que tu ISP te proporciona).
