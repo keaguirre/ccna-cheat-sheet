@@ -447,7 +447,7 @@ depende de lo que quiera hacer tengo dos estrategias:
     - Permitir solo lo que quiero y denegar el resto con deny any any
     - Denegar solo lo que quiero y permitir el resto con permit any any
 
-    - <code>{permi|deny} any any</code>        
+    - <code>{permit|deny} any any</code>        
    
 # NAT
 
