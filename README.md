@@ -137,14 +137,15 @@
 - Bajar la seguridad de puertos:
     - no switchport port-security
 
+# Comandos Port-Security
+```
+switchport port-security
+switchport port-security maximum [num]
+switchport port-security violation {protect | restrict | shutdown}
+switchport port-security mac-address sticky
+```
 # OSPFv2 --------------- [(Referencia)](https://ccnadesdecero.com/curso/como-configurar-ospf/)
-```
-- router-id [id_router (ej: 1.1.1.1)]
-- router ospf [ospf_process_id]
-- network [network] [wildcard_mask] area [area(def: area 0)]
-- default-information originate
-- do show ip ospf neighbor
-```
+
 - Ten en cuenta que el uso de **default-information originate** puede tener un impacto en la topología y el enrutamiento de la red, ya que agrega una entrada de ruta por defecto en las tablas de enrutamiento de los routers OSPF. Es importante considerar cuidadosamente las implicaciones antes de usar este comando, especialmente en redes más grandes y complejas.
 ## Si quiero agregarle una loopback
 ```
@@ -155,6 +156,16 @@
 - Router-id [id_router]: si no existe router id, automaticamente selecciona la ip más alta de las loopback, si no están configuradas toma la ip más alta de las interfaces.
 - Do show ip ospf neighbor: para comprobar los vecinos a los cuales está conectado.
 - Ip de loopback debe pertenecer a la network del ospf.
+
+## Comandos OSPF
+
+```
+- router-id [id_router (ej: 1.1.1.1)]
+- router ospf [ospf_process_id]
+- network [network] [wildcard_mask] area [area(def: area 0)]
+- default-information originate
+- do show ip ospf neighbor
+```
 
 # Configuraciones adicionales de OSPFv2
 - ## Interfaces pasivas:
@@ -339,7 +350,6 @@ El Port Channel es especialmente útil en entornos donde se necesita más ancho 
 
     - Cada interfaz que necesitemos incluír a un EtherChannel en específico se debe asignar al mismo id de grupo. La negociación del canal debe estar on (canal sin negociación LACP), passive (escuchar pasivamente y esperar a ser preguntado), o active (preguntar activamente).
 
-
         ## Modos para PAgP y LACP
         ```
         Mode on: 
@@ -406,7 +416,7 @@ Ejemplo: access-list 1 permit 192.168.10.10 0.0.0.0 es reemplazada por access-li
 ### - ACL standard solo tiene origen, se recomienda lo mas lejos del origen
 ### - ACL extendida puedo bloquear destino, se recomienda más cerca del origen
 
-# Comandos
+# Comandos ACL
 ## ACL Estándar
     ´´´
     access-list {numero} {permit|deny} {network} {wildcard}
@@ -483,7 +493,7 @@ El NAT dinámico permite la asignación automática de direcciones locales inter
 PAT (también denominada “NAT con sobrecarga”) conserva las direcciones del conjunto de direcciones globales internas al permitir que el router use una dirección global interna para muchas direcciones locales internas. En otras palabras, se puede utilizar una única dirección IPv4 pública para cientos, incluso miles de direcciones IPv4 privadas internas.
 
     - Defina un conjunto de direcciones IPV4 publicas con un nombre
-        - <code>ip nat pool [nombre-pool] [ip-inicio] [ip-termino] netmask [máscara]</code>
+        - ip nat pool [nombre-pool] [ip-inicio] [ip-termino] netmask [máscara]
     - Defina las direcciones que se pueden traducir
         - access-list [numero-acl] permit [network] [wildcard]
     - Vincule [nombre-pool] a la ACL [numero-acl]
@@ -495,7 +505,7 @@ PAT (también denominada “NAT con sobrecarga”) conserva las direcciones del 
 - inside: Se refiere a las direcciones IP de la red interna que quieres traducir.
 - outside: Se refiere a las direcciones IP de la red externa (generalmente la dirección IP pública que tu ISP te proporciona).
 
-## Comandos
+## Comandos NAT
     - NAT Estático
         ´´´
         ip nat inside source static [dirección_interna] [dirección_externa]
@@ -511,6 +521,11 @@ PAT (también denominada “NAT con sobrecarga”) conserva las direcciones del 
         ip nat [inside | outside]
 
     - NAT PAT
+        ip nat pool [nombre-pool] [ip-inicio] [ip-termino] netmask [máscara]
+        access-list [numero-acl] permit [network] [wildcard]
+        ip nat inside source static [dirección IP privada] [dirección IP pública]
+        ip nat inside source list [numero-acl] pool [nombre-pool]
+
 
 
 <br><br><br><br><br><br>
