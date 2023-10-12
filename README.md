@@ -55,6 +55,9 @@
 - <code> show ipv6 ospf neighbor</code>
 - <code> show spanning-tree vlan [VLAN_ID] ipv6</code>
 - <code> show access-list</code>
+- <code> show ip nat translations</code>
+- <code> show ip nat translations verbose</code>
+- <code> show ip nat statistics</code>
 
 - Vecinos: <code>do show ip ospf neighbor</code>
 - Inundación de LSAs: <code>show ip ospf </code>database: 
@@ -476,6 +479,16 @@ El NAT dinámico permite la asignación automática de direcciones locales inter
         - Asocia el grupo de direcciones IP públicas (pool) con la lista de acceso
         - Configura la interfaz: ip nat [inside | outside]
 
+## NAT PAT
+PAT (también denominada “NAT con sobrecarga”) conserva las direcciones del conjunto de direcciones globales internas al permitir que el router use una dirección global interna para muchas direcciones locales internas. En otras palabras, se puede utilizar una única dirección IPv4 pública para cientos, incluso miles de direcciones IPv4 privadas internas.
+
+    - Defina un conjunto de direcciones IPV4 publicas con un nombre
+        - <code>ip nat pool [nombre-pool] [ip-inicio] [ip-termino] netmask [máscara]</code>
+    - Defina las direcciones que se pueden traducir
+        - access-list [numero-acl] permit [network] [wildcard]
+    - Vincule [nombre-pool] a la ACL [numero-acl]
+        - ip nat inside source static [dirección IP privada] [dirección IP pública]
+        - ip nat inside source list [numero-acl] pool [nombre-pool]
 
 <hr>
 
@@ -496,6 +509,8 @@ El NAT dinámico permite la asignación automática de direcciones locales inter
         ip nat inside source list [número de ACL] pool [nombre del pool]
         interface [tipo] [número]
         ip nat [inside | outside]
+
+    - NAT PAT
 
 
 <br><br><br><br><br><br>
