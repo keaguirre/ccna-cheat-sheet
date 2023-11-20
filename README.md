@@ -565,7 +565,7 @@ Para la configuración de una configuración de una VPN Site-to-Site utilizando 
 ## Comandos Tunel IPSec
 
 # Activar Licencia para el tunel
-	license boot level security9
+	license boot level securityk9
 
 - Slide 15 ppt 3.2.1
 ### Paso 1
