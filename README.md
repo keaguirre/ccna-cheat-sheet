@@ -531,7 +531,7 @@ PAT (también denominada “NAT con sobrecarga”) conserva las direcciones del 
 
 GRE se utiliza para crear un túnel VPN entre dos sitios, como se muestra enla figura. Para implementar un túnel GRE, el administrador de red primero debe descubrir las direcciones IP de las terminales.
 
-## Comandos tunnel GRE
+ ## Comandos tunnel GRE
 
     interface Tunnel[int_num]
         tunnel mode gre ip
@@ -563,6 +563,10 @@ Para la configuración de una configuración de una VPN Site-to-Site utilizando 
 5. Aplicación del crypto map a la interfaz (IKE Fase 2).
 
 ## Comandos Tunel IPSec
+
+# Activar Licencia para el tunel
+	license boot level security9
+
 - Slide 15 ppt 3.2.1
 ### Paso 1
 Cada paso se repite en el router de destino
@@ -619,8 +623,7 @@ Cada paso se repite en el router de destino
 
 ## SNMP
 
-
-
+
 
 <br><br><br><br><br><br>
 <h1 align="center"><strong> Created by <a href="https://github.com/keaguirre">keaguirre</strong></h1>
