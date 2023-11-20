@@ -526,6 +526,98 @@ PAT (también denominada “NAT con sobrecarga”) conserva las direcciones del 
         ip nat inside source static [dirección IP privada] [dirección IP pública]
         ip nat inside source list [numero-acl] pool [nombre-pool]
 
+# VPN
+## Tunnel GRE
+
+GRE se utiliza para crear un túnel VPN entre dos sitios, como se muestra enla figura. Para implementar un túnel GRE, el administrador de red primero debe descubrir las direcciones IP de las terminales.
+
+## Comandos tunnel GRE
+
+    interface Tunnel[int_num]
+        tunnel mode gre ip
+        ip address [tunnel_net_ip] [tunnel_mask_ip]
+        tunnel source [public_ip_source]
+        tunnel destination [public_ip_destination]
+    show interface tunnel [numero de interfaz]
+    ip route [tunnel_destino_ip] [mask] Tunnel[int_num]
+
+### Shows
+- show ip interface brief | include Tunnel
+- show interface Tunnel [int_num]
+
+## Tunnel IPSec
+Un túnel IPsec (Protocolo de Seguridad de la Capa de Internet) en Cisco se utiliza para establecer una conexión segura entre dos puntos finales a través de Internet u otra red no confiable. IPsec proporciona autenticación y cifrado para proteger el tráfico de red entre los puntos finales del túnel. Aquí hay una explicación básica de cómo configurar un túnel IPsec en dispositivos Cisco.
+Hay dos fases en la negociación de un túnel IPsec: Fase 1 e Fase 2.
+En la Fase 1, se establece una asociación de seguridad inicial y se negocian los parámetros de seguridad. Aquí es donde se utilizan las claves precompartidas (PSK) o certificados RSA para autenticar y asegurar la comunicación entre los puntos finales.
+
+- Claves Precompartidas (PSK): La PSK es simplemente una clave compartida entre los dos puntos finales del túnel IPsec. Ambos puntos finales deben conocer esta clave y usarla para autenticar uno al otro durante la negociación de la Fase 1. La ventaja de la PSK es su simplicidad y facilidad de implementación, pero se debe tener cuidado de mantenerla segura.
+- Certificados RSA: En lugar de una clave precompartida, también puedes utilizar certificados RSA para autenticar los extremos. Esto implica el uso de certificados digitales, donde cada extremo del túnel tiene su propio par de claves (pública y privada), y se intercambian certificados para establecer la confianza mutua.
+
+En la Fase 2, se negocian parámetros de seguridad específicos para el tráfico que será encapsulado. Aquí se especifican los algoritmos de cifrado y autenticación que se utilizarán. No se utilizan PSK o certificados RSA en esta fase.
+
+Para la configuración de una configuración de una VPN Site-to-Site utilizando Cisco IOSson necesarios los siguientes 5 pasos:
+1. Configuración de la política ISAKMP (IKE Fase 1).
+2. Configuración de los IPsec transform sets (IKE Fase 2, terminación del túnel).
+3. Configuración de la crypto ACL (tráfico interesante, transferencia segura de datos).
+4. Configuración del crypto map (IKE Fase 2).
+5. Aplicación del crypto map a la interfaz (IKE Fase 2).
+
+## Comandos Tunel IPSec
+- Slide 15 ppt 3.2.1
+### Paso 1
+- Cada paso se repite en el router de destino
+    crypto isakmp policy 110
+        authentication pre-share
+        encryption [algoritmo: aes, 3des, des]
+        group [numero de grupo: 1, 2, 5, 14, 19] # mientras mas bajo mas debil, mas alto mas fuerte, pero tiene mayor costo normalmente se ocupa el 2 que es comun y aceptable
+        hash [sha, sha256, sha384, md5]
+        lifetime 43200
+
+### Paso 2
+- Cada paso se repite en el router de destino
+    crypto isakmp key [clave-compartida(ej: cisco123)] address [public_ip_destination]
+    crypto ipsec transform-set MYSET esp-aes 128
+        exit
+    access-list 110 permit tcp [net_saliente] [wildcard] [net_destino] [wildcard]
+    crypto map MYMAP 10 ipsec-isakmp
+        match address 110
+        set peer [router_destino] default
+        set peer [router_destino]
+        set pfs group1
+        set transform-set nine
+        set security-association lifetime seconds 86400
+        crypto map [map-name]
+        interface [type and number]
+            crypto map MYMAP
+    show crypto isakmp sa
+    show crypto ipsec sa
+
+## CDP discovery
+    show cdp
+    no cdp run  #Deshabilitar cdp
+    cdp run #Habilitar cdp
+    interface [tipo] #Habilitar cdp en la interfaz
+        cdp enable
+    show cdp neighbors
+
+## LLDP
+    lldp run #Habilitar lldp
+    interface [tipo y num]
+        lldp transmit
+        lldp receive
+        end
+    show lldp
+    show lldp neighbors
+
+## NTP Clock
+    show clock detail
+    ntp server [ip_server]
+    show ntp associations
+    show ntp status
+
+## SNMP
+
+
 
 
 <br><br><br><br><br><br>
