@@ -565,7 +565,8 @@ Para la configuración de una configuración de una VPN Site-to-Site utilizando 
 ## Comandos Tunel IPSec
 - Slide 15 ppt 3.2.1
 ### Paso 1
-- Cada paso se repite en el router de destino
+Cada paso se repite en el router de destino
+
     crypto isakmp policy 110
         authentication pre-share
         encryption [algoritmo: aes, 3des, des]
@@ -574,7 +575,8 @@ Para la configuración de una configuración de una VPN Site-to-Site utilizando 
         lifetime 43200
 
 ### Paso 2
-- Cada paso se repite en el router de destino
+Cada paso se repite en el router de destino
+
     crypto isakmp key [clave-compartida(ej: cisco123)] address [public_ip_destination]
     crypto ipsec transform-set MYSET esp-aes 128
         exit
