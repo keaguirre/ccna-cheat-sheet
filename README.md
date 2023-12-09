@@ -1,6 +1,10 @@
 # CCNA Cheatsheet
 **Usa este material bajo tu propio riesgo, estos apuntes pueden contener tener errores y solo son de referencia y/o apoyo para estudio**
 
+## Fixes to do
+[ ] Corregir EIGRP no se configura en las interfaces, revisar
+[ ] Revisar la sintaxis de los comandos de las ACL, algo había mal
+
 ## Mascaras de red mas ocupadas
 - /30: 255.255.255.252
 - /24: 255.255.255.0
@@ -623,7 +627,8 @@ Cada paso se repite en el router de destino
 
 ## SNMP
 
-
+
+
 
 <br><br><br><br><br><br>
 <h1 align="center"><strong> Created by <a href="https://github.com/keaguirre">keaguirre</strong></h1>
