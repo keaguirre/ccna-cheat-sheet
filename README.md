@@ -2,8 +2,8 @@
 **Usa este material bajo tu propio riesgo, estos apuntes pueden contener tener errores y solo son de referencia y/o apoyo para estudio**
 
 ## Fixes to do
-[ ] Corregir EIGRP no se configura en las interfaces, revisar
-[ ] Revisar la sintaxis de los comandos de las ACL, algo había mal
+- [ ] Corregir EIGRP no se configura en las interfaces, revisar
+- [ ] Revisar la sintaxis de los comandos de las ACL, algo había mal
 
 ## Mascaras de red mas ocupadas
 - /30: 255.255.255.252
