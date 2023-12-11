@@ -529,6 +529,7 @@ PAT (también denominada “NAT con sobrecarga”) conserva las direcciones del 
         access-list [numero-acl] permit [network] [wildcard]
         ip nat inside source static [dirección IP privada] [dirección IP pública] overload
         ip nat inside source list [numero-acl] pool [nombre-pool] overload
+	show ip nat translations para verificar la traduccion
 
 # VPN
 ## Tunnel GRE
